@@ -4,6 +4,7 @@ const redis = require("ioredis");
 const dotenv = require("dotenv");
 const productRoutes = require("./routes/products");
 const cors = require("cors");
+const authRoutes = require("./routes/auth");
 
 dotenv.config();
 const app = express();
@@ -31,3 +32,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);

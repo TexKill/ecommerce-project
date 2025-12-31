@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
 
-// GET /api/products - Отримати всі товари
+// GET /api/products - Get all products
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find();
@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /api/products - Додати новий товар (для тестів)
+// POST /api/products - Add a new product (for testing)
 router.post("/", async (req, res) => {
   const product = new Product(req.body);
   try {

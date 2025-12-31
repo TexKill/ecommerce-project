@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Додаємо індекс для швидкого пошуку за назвою
+// Adding an index for quick search by name
 productSchema.index({ name: "text" });
 
 module.exports = mongoose.model("Product", productSchema);
