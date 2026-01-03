@@ -29,7 +29,7 @@ export default function RegisterPage() {
       } else {
         toast.error(data.message || "Помилка реєстрації");
       }
-    } catch (err) {
+    } catch {
       toast.error("Не вдалося з’єднатися з сервером");
     }
   };

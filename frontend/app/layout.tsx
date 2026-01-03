@@ -1,15 +1,8 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar"; // Імпортуємо наш Navbar
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
+import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "My E-commerce Store",
-  description: "Scalable client-server shop project",
-};
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -17,11 +10,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Toaster position="top-center" reverseOrder={false} />
-        <Navbar /> {}
-        <main>{children}</main>
+    <html lang="uk">
+      <body>
+        <AuthProvider>
+          <CartProvider>
+            <Toaster position="top-center" />
+            <Navbar />
+            <main className="min-h-screen bg-gray-50">{children}</main>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
