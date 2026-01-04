@@ -11,12 +11,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uk">
-      <body>
+      <body className="bg-slate-950 text-slate-50 antialiased">
         <AuthProvider>
           <CartProvider>
             <Toaster position="top-center" />
             <Navbar />
-            <main className="min-h-screen bg-gray-50">{children}</main>
+            <main className="flex-1">{children}</main>
           </CartProvider>
         </AuthProvider>
       </body>

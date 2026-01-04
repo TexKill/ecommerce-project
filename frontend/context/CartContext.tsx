@@ -23,6 +23,7 @@ interface CartItem extends Product {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (product: Product) => void;
+  decreaseQuantity: (productId: string) => void; // Додано
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
   totalPrice: number;
@@ -31,39 +32,65 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  // Завантажуємо кошик відразу при ініціалізації стану
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("cart");
-      return saved ? JSON.parse(saved) : [];
+      try {
+        return saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        console.error("Помилка при читанні кошика:", e);
+        return [];
+      }
     }
     return [];
   });
 
-  // Використовуємо useEffect тільки для збереження змін
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product: Product) => {
+    let isNew = false;
     setCart((prev) => {
       const existing = prev.find((item) => item._id === product._id);
       if (existing) {
-        toast.success(`Кількість ${product.name} оновлено`);
+        isNew = false;
         return prev.map((item) =>
           item._id === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      toast.success(`${product.name} додано до кошика`);
+      isNew = true;
       return [...prev, { ...product, quantity: 1 }];
     });
+    toast.success(isNew ? `${product.name} додано` : "Кількість оновлено", {
+      id: product._id,
+    });
+  };
+
+  // НОВА ФУНКЦІЯ: Зменшення кількості
+  const decreaseQuantity = (productId: string) => {
+    setCart((prev) => {
+      const existing = prev.find((item) => item._id === productId);
+
+      if (existing && existing.quantity > 1) {
+        // Якщо більше 1 — просто зменшуємо
+        return prev.map((item) =>
+          item._id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+      }
+      // Якщо 1 — видаляємо повністю
+      return prev.filter((item) => item._id !== productId);
+    });
+    toast.error("Кількість зменшено", { id: productId });
   };
 
   const removeFromCart = (productId: string) => {
     setCart((prev) => prev.filter((item) => item._id !== productId));
-    toast.error("Товар видалено");
+    toast.error("Товар видалено", { id: productId });
   };
 
   const clearCart = () => {
@@ -78,7 +105,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, totalPrice }}
+      value={{
+        cart,
+        addToCart,
+        decreaseQuantity,
+        removeFromCart,
+        clearCart,
+        totalPrice,
+      }}
     >
       {children}
     </CartContext.Provider>
